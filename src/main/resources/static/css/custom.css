@@ -225,3 +225,24 @@ a { text-underline-offset: .15em; }
 }
 .footer-academia a { color: var(--ac-ice); }
 .footer-academia a:hover { color: #fff; }
+
+/* ---------- página inicial ---------- */
+.hero {
+  background: linear-gradient(135deg, var(--ac-navy) 0%, var(--ac-blue) 100%);
+  color: #fff;
+  padding: 4rem 0;
+  border-bottom: 4px solid var(--ac-sky);
+}
+.hero h1 { color: #fff; font-size: clamp(2rem, 5vw, 3rem); }
+.hero .lead { color: var(--ac-ice); max-width: 40rem; }
+
+.stat-card {
+  background: #fff;
+  border: 1px solid var(--ac-ice);
+  border-left: 6px solid var(--ac-sky);
+  border-radius: .75rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(27, 54, 93, .08);
+}
+.stat-card .numero { font-size: 2rem; font-weight: 800; color: var(--ac-blue); line-height: 1.1; }
+.stat-card .rotulo { color: var(--ac-navy); font-weight: 600; }
