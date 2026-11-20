@@ -45,6 +45,13 @@ Estilos: `static/css/custom.css` (paleta #1B365D, #005A9C, #60C1E5, #A0E0EF); pr
 | POST/DELETE | `/api/aulas/{id}/inscricoes/{clienteId}` | inscreve / cancela inscrição |
 | GET | `/api/unidades`, `/esportes`, `/personais`, `/clientes` | consultas de apoio |
 
+## Base de dados de demonstração
+`carga/CargaInicial` garante os cadastros básicos e `carga/CargaDemonstracao` gera dados fictícios com semente fixa:
+6 unidades, 10 esportes (2 inativos), 12 personal trainers, 63 clientes e cerca de 45 aulas entre 3 semanas atrás e 3 semanas à frente,
+com inscrições, aulas concluídas/canceladas/agendadas, sem estourar a lotação e sem conflito de horário do personal.
+Só roda se o banco estiver quase vazio (não duplica ao reiniciar). Para recriar a base do zero, apague a pasta `database/` e suba de novo.
+Para desligar: `academia.carga.demo=false`.
+
 ## Regras de negócio
 - Status: `AGENDADA → EM_ANDAMENTO | CANCELADA`, `EM_ANDAMENTO → CONCLUIDA`; `CONCLUIDA` e `CANCELADA` são finais (`StatusAula`, validado na entidade).
 - Inscrição: só em aula AGENDADA, sem duplicidade e respeitando a capacidade; `@Version` evita estourar a lotação em requisições simultâneas.
