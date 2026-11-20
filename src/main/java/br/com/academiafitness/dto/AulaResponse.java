@@ -9,6 +9,9 @@ import java.util.List;
 
 public record AulaResponse(
         Long id,
+        Long esporteId,
+        Long personalId,
+        Long unidadeId,
         String esporte,
         String personal,
         String unidade,
@@ -28,7 +31,8 @@ public record AulaResponse(
                 .map(c -> new ClienteResumo(c.getId(), c.getNome()))
                 .sorted(Comparator.comparing(ClienteResumo::nome))
                 .toList();
-        return new AulaResponse(a.getId(), a.getEsporte().getNome(), a.getPersonal().getNome(),
+        return new AulaResponse(a.getId(), a.getEsporte().getId(), a.getPersonal().getId(),
+                a.getUnidade().getId(), a.getEsporte().getNome(), a.getPersonal().getNome(),
                 a.getUnidade().getNome(), a.getInicio(), a.getFim(), a.getDuracaoMin(),
                 a.getCapacidade(), a.vagasDisponiveis(), a.getStatus(), inscritos);
     }
