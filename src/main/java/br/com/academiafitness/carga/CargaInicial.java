@@ -5,6 +5,7 @@ import br.com.academiafitness.repository.*;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.List;
  * (28_academias_fitness.xlsx) deve ser adicionada aqui no mesmo formato.
  */
 @Component
+@Order(1)
 @ConditionalOnProperty(name = "academia.carga.inicial", havingValue = "true")
 public class CargaInicial implements ApplicationRunner {
 
