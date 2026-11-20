@@ -8,48 +8,125 @@
 <div class="page-header">
   <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
     <div>
-      <h1>Aulas</h1>
+      <h1><i class="bi bi-calendar2-week me-2" aria-hidden="true"></i>Aulas</h1>
       <p>Horários, personal trainers e vagas disponíveis</p>
     </div>
-    <a class="btn btn-accent" sec:authorize="hasRole('ADMIN')" th:href="@{/aulas/nova}">Nova aula</a>
+    <a class="btn btn-accent" sec:authorize="hasRole('ADMIN')" th:href="@{/aulas/nova}">
+      <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Nova aula
+    </a>
   </div>
 </div>
 
 <main class="container pb-5">
   <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="alert alert-warning d-flex align-items-center gap-2" role="alert" th:if="${aviso}">
+    <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+    <span th:text="${aviso}">Aviso</span>
+  </div>
 
-  <form class="row g-2 align-items-end my-3" method="get" th:action="@{/aulas}">
-    <div class="col-12 col-sm-6 col-md-4">
-      <label class="form-label" for="status">Filtrar por status</label>
-      <select class="form-select" id="status" name="status">
-        <option value="">Todos</option>
-        <option th:each="s : ${todosStatus}" th:value="${s.name()}" th:text="${s.name()}"
-                th:selected="${statusSelecionado != null and statusSelecionado == s}">STATUS</option>
-      </select>
+  <div class="card mb-3">
+    <div class="card-header"><i class="bi bi-funnel me-1" aria-hidden="true"></i>Filtrar aulas</div>
+    <div class="card-body">
+      <form method="get" th:action="@{/aulas}">
+        <div class="row g-3">
+          <div class="col-12 col-lg-4">
+            <label class="form-label" for="q">Busca por texto</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white"><i class="bi bi-search" aria-hidden="true"></i></span>
+              <input type="search" class="form-control" id="q" name="q" th:value="${filtro.q}"
+                     placeholder="Esporte, personal ou unidade" maxlength="100">
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-lg-4">
+            <label class="form-label" for="esporteId">Esporte</label>
+            <select class="form-select" id="esporteId" name="esporteId">
+              <option value="">Todos</option>
+              <option th:each="e : ${esportes}" th:value="${e.id}" th:text="${e.nome}"
+                      th:selected="${filtro.esporteId != null and filtro.esporteId == e.id}">Esporte</option>
+            </select>
+          </div>
+          <div class="col-12 col-sm-6 col-lg-4">
+            <label class="form-label" for="personalId">Personal trainer</label>
+            <select class="form-select" id="personalId" name="personalId">
+              <option value="">Todos</option>
+              <option th:each="p : ${personais}" th:value="${p.id}" th:text="${p.nome}"
+                      th:selected="${filtro.personalId != null and filtro.personalId == p.id}">Personal</option>
+            </select>
+          </div>
+          <div class="col-12 col-sm-6 col-lg-4">
+            <label class="form-label" for="unidadeId">Unidade</label>
+            <select class="form-select" id="unidadeId" name="unidadeId">
+              <option value="">Todas</option>
+              <option th:each="u : ${unidades}" th:value="${u.id}" th:text="${u.nome}"
+                      th:selected="${filtro.unidadeId != null and filtro.unidadeId == u.id}">Unidade</option>
+            </select>
+          </div>
+          <div class="col-12 col-sm-6 col-lg-4">
+            <label class="form-label" for="status">Status</label>
+            <select class="form-select" id="status" name="status">
+              <option value="">Todos</option>
+              <option th:each="s : ${todosStatus}" th:value="${s.name()}" th:text="${s.name()}"
+                      th:selected="${filtro.status != null and filtro.status == s}">STATUS</option>
+            </select>
+          </div>
+          <div class="col-6 col-lg-2">
+            <label class="form-label" for="de">De</label>
+            <input type="date" class="form-control" id="de" name="de" th:value="${filtro.de}">
+          </div>
+          <div class="col-6 col-lg-2">
+            <label class="form-label" for="ate">Até</label>
+            <input type="date" class="form-control" id="ate" name="ate" th:value="${filtro.ate}">
+          </div>
+          <div class="col-12 d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="apenasComVagas" name="apenasComVagas" value="true"
+                     th:checked="${filtro.apenasComVagas}">
+              <label class="form-check-label" for="apenasComVagas">Mostrar só aulas com vagas</label>
+            </div>
+            <div class="actions">
+              <button type="submit" class="btn btn-primary me-2">
+                <i class="bi bi-funnel me-1" aria-hidden="true"></i>Filtrar
+              </button>
+              <a class="btn btn-outline-primary" th:href="@{/aulas}">Limpar filtros</a>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
-    <div class="col-12 col-sm-6 col-md-3 actions">
-      <button type="submit" class="btn btn-primary">Filtrar</button>
-      <a class="btn btn-outline-primary" th:href="@{/aulas}">Limpar</a>
-    </div>
-  </form>
+  </div>
 
-  <div class="alert alert-info" th:if="${aulas.isEmpty()}">Nenhuma aula encontrada.</div>
+  <p class="small mb-2"><strong th:text="${total}">0</strong> aula(s) encontrada(s)</p>
+
+  <div class="card text-center py-5 px-3" th:if="${aulas.isEmpty()}">
+    <i class="bi bi-calendar-x display-5" aria-hidden="true"></i>
+    <p class="mt-3 mb-1 fw-semibold">Nenhuma aula encontrada.</p>
+    <p class="small mb-3">Tente ampliar o período ou limpar os filtros aplicados.</p>
+    <div><a class="btn btn-sm btn-outline-primary" th:href="@{/aulas}">Limpar filtros</a></div>
+  </div>
 
   <div class="table-wrapper table-responsive" th:unless="${aulas.isEmpty()}">
     <table class="table table-striped table-hover align-middle">
       <thead>
-        <tr><th>Esporte</th><th>Personal</th><th>Unidade</th><th>Início</th><th>Duração</th><th>Vagas</th><th>Status</th><th class="text-end">Ações</th></tr>
+        <tr><th>Esporte</th><th>Personal</th><th>Unidade</th><th>Início</th><th>Duração</th><th>Vagas livres</th><th>Status</th><th class="text-end">Ações</th></tr>
       </thead>
       <tbody>
         <tr th:each="aula : ${aulas}">
-          <td th:text="${aula.esporte()}">Esporte</td>
+          <td class="fw-semibold" th:text="${aula.esporte()}">Esporte</td>
           <td th:text="${aula.personal()}">Personal</td>
           <td th:text="${aula.unidade()}">Unidade</td>
           <td th:text="${#temporals.format(aula.inicio(), 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</td>
           <td th:text="${aula.duracaoMin() + ' min'}">60 min</td>
-          <td th:text="${aula.vagasDisponiveis() + ' / ' + aula.capacidade()}">1 / 2</td>
+          <td>
+            <span class="badge rounded-pill"
+                  th:classappend="${aula.vagasDisponiveis() == 0} ? 'text-bg-danger' : (${aula.vagasDisponiveis() <= 2} ? 'text-bg-warning' : 'text-bg-success')"
+                  th:text="${aula.vagasDisponiveis() + ' / ' + aula.capacidade()}">1 / 2</span>
+          </td>
           <td><span class="status" th:classappend="${'status-' + #strings.toLowerCase(aula.status().name())}" th:text="${aula.status()}">AGENDADA</span></td>
-          <td class="text-end"><a class="btn btn-sm btn-outline-primary" th:href="@{/aulas/{id}(id=${aula.id()})}">Ver</a></td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-primary" th:href="@{/aulas/{id}(id=${aula.id()})}">
+              <i class="bi bi-eye me-1" aria-hidden="true"></i>Ver
+            </a>
+          </td>
         </tr>
       </tbody>
     </table>
