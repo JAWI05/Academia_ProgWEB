@@ -60,6 +60,17 @@ O console H2 está desligado por padrão (`H2_CONSOLE=true` só para depuração
 As regras vêm da camada de serviço (as mesmas da API): transições de status, lotação, conflito de horário do personal, esporte inativo, e-mail único de cliente e bloqueio de exclusão de cliente inscrito.
 Estilos: `static/css/custom.css` (paleta #1B365D, #005A9C, #60C1E5, #A0E0EF); prévia dos componentes em `/design-preview.html`.
 
+## Filtros (aulas e clientes)
+Os filtros rodam no banco (Criteria API / Specifications), combinam com **E** e ignoram o que estiver em branco; texto sem diferenciar maiúsculas e com `%`/`_` tratados como texto comum.
+
+| Tela | Filtros |
+|---|---|
+| `/aulas` | texto (esporte, personal ou unidade), esporte, personal, unidade, status, período (de/até) e "só aulas com vagas" |
+| `/clientes` | texto (nome, e-mail ou objetivo), objetivo, situação (com/sem inscrição em aula) e período de cadastro |
+
+A API aceita os mesmos parâmetros na query string, por exemplo `GET /api/aulas?status=AGENDADA&apenasComVagas=true&de=2026-11-20&q=carla`.
+Período invertido ou valor inválido não derruba a página: o filtro é ignorado e aparece um aviso.
+
 ## Endpoints da API REST (entidade central: Aula)
 | Método | Rota | Descrição |
 |---|---|---|
