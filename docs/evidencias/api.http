@@ -1,0 +1,46 @@
+### Requisições de exemplo (cliente HTTP do IntelliJ). Suba a aplicação antes: .\mvnw.cmd spring-boot:run
+@host = http://localhost:8080
+
+### 1. Listar aulas agendadas com vagas (ADMIN)
+GET {{host}}/api/aulas?status=AGENDADA&apenasComVagas=true
+Authorization: Basic admin admin123
+
+### 2. Filtro por texto e período
+GET {{host}}/api/aulas?q=carla&de=2026-11-01&ate=2026-12-31
+Authorization: Basic admin admin123
+
+### 3. Aula inexistente -> 404 (ProblemDetail)
+GET {{host}}/api/aulas/99999
+Authorization: Basic admin admin123
+
+### 4. Dados inválidos -> 400 com erros por campo
+POST {{host}}/api/aulas
+Authorization: Basic admin admin123
+Content-Type: application/json
+
+{"esporteId": 1, "personalId": 1, "unidadeId": 1, "inicio": "2020-01-01T10:00:00", "duracaoMin": 5, "capacidade": 0}
+
+### 5. Criar aula válida -> 201 (ajuste a data para o futuro)
+POST {{host}}/api/aulas
+Authorization: Basic admin admin123
+Content-Type: application/json
+
+{"esporteId": 2, "personalId": 2, "unidadeId": 1, "inicio": "2027-01-10T09:00:00", "duracaoMin": 45, "capacidade": 15}
+
+### 6. Transição inválida (AGENDADA -> CONCLUIDA) -> 409
+PATCH {{host}}/api/aulas/1/status
+Authorization: Basic admin admin123
+Content-Type: application/json
+
+{"status": "CONCLUIDA"}
+
+### 7. OPERADOR consulta (200)
+GET {{host}}/api/aulas
+Authorization: Basic operador operador123
+
+### 8. OPERADOR tenta excluir aula -> 403
+DELETE {{host}}/api/aulas/1
+Authorization: Basic operador operador123
+
+### 9. Sem credenciais -> acesso negado (401 ou redirecionamento ao login, conforme o cabeçalho Accept)
+GET {{host}}/api/aulas
