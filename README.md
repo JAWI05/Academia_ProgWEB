@@ -1,104 +1,175 @@
-# Academia — Projeto Integrador Full Stack (backend + site + login)
+# Academia Fitness — Projeto Integrador Full Stack
 
-Base: projeto Spring Initializr (`progweb`) + padrão do exemplo da Aula 16 (BDJPA) do professor.
-Spring Boot 4.1 · Java 21 · Spring Data JPA/Hibernate · H2 (arquivo, schema APP) · Bean Validation.
-Thymeleaf · Bootstrap · Spring Security (login, logout, dois perfis, BCrypt, CSRF).
+Sistema web de gestão de academia (aulas, inscrições, clientes e usuários), desenvolvido como **modernização de um sistema legado**
+para a disciplina de Programação Web (Engenharia de Computação, ESEG, 2º semestre de 2026). Projeto individual.
 
-## O que veio do exemplo do professor
-| Exemplo (BDJPA) | Aqui |
+| | |
 |---|---|
-| `persistence.xml` (H2 em arquivo, schema APP, `update`, show/format/highlight SQL) | mesmas chaves em `application.properties` (o Spring Boot gerencia a unidade de persistência) |
-| Entidades com `@Table` (UNIQUE e índices nomeados), colunas em maiúsculas, `@ForeignKey` nomeada, `LAZY` | todas as entidades em `model/` seguem o mesmo padrão |
-| `CargaDepartamentos` (upsert por chave natural) | `carga/CargaInicial` (idempotente, por UNIQUE) |
-| `H2Console` | console embutido do Spring Boot em `/h2-console` (starter `spring-boot-h2console`) |
-| `.gitignore`, Java 21 | mantidos (+ `database/`); pacote do projeto: `br.com.academiafitness.progweb` |
+| Linguagem / plataforma | Java 21, Spring Boot 4 (Spring MVC, Spring Data JPA, Spring Security) |
+| Persistência | JPA/Hibernate, banco relacional H2 em arquivo (schema `APP`) |
+| Interface | Thymeleaf, Bootstrap 5, tema próprio (`static/css/custom.css`) |
+| Segurança | Login/logout, 2 perfis (ADMIN e OPERADOR), BCrypt, CSRF, autorização no servidor |
+| Testes | JUnit 5, Mockito, Spring Test/MockMvc, Spring Security Test (131 métodos de teste) |
 
-## Como executar
+## 1. Pré-requisitos
+
+- **JDK 21** (`java -version` deve mostrar 21). Nada mais é necessário: o Maven vem junto pelo *wrapper* (`mvnw`).
+- **Git** (para clonar) e acesso à internet na primeira execução (baixa dependências; as telas carregam Bootstrap por CDN).
+- Porta **8080** livre.
+
+## 2. Instalação
+
 ```bash
-./mvnw spring-boot:run    # http://localhost:8080 ; banco em ./database/academia (persiste entre execuções)
-./mvnw test               # unitários + integração (H2 em memória)
+git clone <URL-DO-REPOSITORIO>
+cd <pasta-do-repositorio>        # a pasta que contém o pom.xml
 ```
-Console do banco: http://localhost:8080/h2-console (URL `jdbc:h2:file:./database/academia;AUTO_SERVER=TRUE`, usuário `sa`, senha vazia; tabelas no schema `APP`).
-Opcional: `DB_USER`, `DB_PASSWORD`. O Maven Wrapper já está no projeto.
 
-## Segurança (3ª entrega)
-Usuários de demonstração, criados por `carga/CargaUsuarios` na primeira execução (quando não existe nenhum usuário), com senhas gravadas em BCrypt. A `CargaDemonstracao` só gera dados fictícios (clientes, aulas, personais...) e não cria contas:
+## 3. Execução
+
+**Windows (PowerShell)**
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+**Linux / macOS**
+```bash
+./mvnw spring-boot:run
+```
+
+Abra <http://localhost:8080/> — você será levado ao login.
 
 | Perfil | Login | Senha |
 |---|---|---|
-| ADMIN | `admin` | `admin123` |
-| OPERADOR | `operador` | `operador123` |
+| Administrador | `admin` | `admin123` |
+| Operador | `operador` | `operador123` |
 
-Valores só para demonstração: troque em `application.properties` ou pelas variáveis `ADMIN_SENHA` e `OPERADOR_SENHA`.
+> As contas e senhas acima são **somente de demonstração**; são criadas na primeira execução e gravadas em BCrypt.
+> Para trocar, defina antes de subir a aplicação as variáveis `ADMIN_SENHA` e `OPERADOR_SENHA` (ou edite `application.properties`).
 
-| Permissão | ADMIN | OPERADOR |
+Na primeira execução o sistema cria o esquema do banco e carrega dados fictícios: 6 unidades, 10 esportes, 12 personal trainers,
+63 clientes e cerca de 45 aulas (passadas e futuras, com inscrições). A carga só roda com o banco vazio; reiniciar não duplica nada.
+
+**Recomeçar do zero:** pare a aplicação e apague a pasta `database/` (o banco é o arquivo `database/academia.mv.db`).
+
+### Configuração
+
+| Chave / variável | Padrão | Para que serve |
 |---|---|---|
+| `spring.datasource.url` | `jdbc:h2:file:./database/academia;AUTO_SERVER=TRUE;INIT=...` | banco em arquivo; `AUTO_SERVER` permite abrir o mesmo banco em outra ferramenta com a aplicação rodando |
+| `DB_USER` / `DB_PASSWORD` | `sa` / vazio | credenciais do banco |
+| `ADMIN_SENHA` / `OPERADOR_SENHA` | `admin123` / `operador123` | senhas das contas de demonstração (usadas só quando não existe nenhum usuário) |
+| `academia.carga.inicial` | `true` | garante cadastros básicos e as duas contas |
+| `academia.carga.demo` | `true` | gera a base de demonstração (use `false` para começar com a base mínima) |
+| `H2_CONSOLE` | `false` | console web do H2; **mantenha desligado** (veja *Segurança* em `docs/DECISOES_TECNICAS.md`). Para inspecionar o banco use a ferramenta de banco de dados do IntelliJ com a URL JDBC acima |
+
+## 4. Como usar (roteiro rápido)
+
+1. Entre como **admin**: `Início` mostra os indicadores e as próximas aulas.
+2. `Aulas`: filtre por texto, esporte, personal, unidade, status, período e "só com vagas"; abra uma aula para ver inscritos.
+3. Crie uma aula (`Nova aula`), inscreva clientes e avance o status (`AGENDADA → EM_ANDAMENTO → CONCLUIDA`; `CANCELADA` só a partir de `AGENDADA`).
+4. `Clientes`: cadastre, edite, filtre (inclusive "com/sem inscrição") e tente excluir um cliente inscrito (o sistema recusa).
+5. `Usuários` (só admin): crie contas, defina o perfil e ative/desative.
+6. Saia e entre como **operador** para ver o que muda: sem criar/editar aula, sem alterar status, sem excluir cliente, sem `Usuários`.
+   Digitar uma URL restrita na barra de endereços leva à página de acesso negado (HTTP 403).
+
+### Permissões
+
+| Operação | ADMIN | OPERADOR |
+|---|:---:|:---:|
 | Ver aulas, detalhes e clientes | sim | sim |
-| Cadastrar/editar clientes | sim | sim |
-| Inscrever / cancelar inscrição | sim | sim |
+| Cadastrar e editar clientes | sim | sim |
+| Inscrever / cancelar inscrição em aula | sim | sim |
 | Criar, editar, excluir aula e alterar status | sim | **não** |
 | Excluir cliente | sim | **não** |
-| Gerenciar usuários (`/usuarios`) | sim | **não** |
+| Gerenciar usuários | sim | **não** |
 
-As regras ficam em `config/SecurityConfig` e valem no servidor: o operador que digitar a URL restrita cai em `/acesso-negado` (HTTP 403), e a API REST segue as mesmas regras (use autenticação básica no curl, ex.: `curl -u admin:admin123 localhost:8080/api/aulas`).
-Os botões restritos também são ocultados nas telas com `sec:authorize`, mas isso é só conforto visual.
-Logout é por `POST /logout` com token CSRF. `EstadoContaFilter` encerra a sessão de quem foi desativado por um administrador.
-Regras de usuário: não é possível desativar a própria conta nem deixar o sistema sem um administrador ativo.
-O console H2 está desligado por padrão (`H2_CONSOLE=true` só para depuração local).
+## 5. API REST
 
-## Site (Thymeleaf + Bootstrap + tema próprio)
-| Página | Rota |
-|---|---|
-| Login / acesso negado | `/login`, `/acesso-negado` |
-| Início (painel e próximas aulas) | `/home` (e `/`) |
-| Usuários (somente ADMIN) | `/usuarios` |
-| Aulas: lista com filtro por status | `/aulas` |
-| Aula: detalhe, inscrições e troca de status | `/aulas/{id}` |
-| Aula: criar / editar | `/aulas/nova`, `/aulas/{id}/editar` |
-| Clientes: lista, criar, editar, excluir | `/clientes`, `/clientes/novo`, `/clientes/{id}/editar` |
+Autenticação básica (mesmos usuários). Exemplos:
 
-As regras vêm da camada de serviço (as mesmas da API): transições de status, lotação, conflito de horário do personal, esporte inativo, e-mail único de cliente e bloqueio de exclusão de cliente inscrito.
-Estilos: `static/css/custom.css` (paleta #1B365D, #005A9C, #60C1E5, #A0E0EF); prévia dos componentes em `/design-preview.html`.
+```bash
+curl -u admin:admin123 "http://localhost:8080/api/aulas?status=AGENDADA&apenasComVagas=true"
+curl -u admin:admin123 -X POST http://localhost:8080/api/aulas -H "Content-Type: application/json" \
+     -d '{"esporteId":2,"personalId":2,"unidadeId":1,"inicio":"2027-01-10T09:00:00","duracaoMin":45,"capacidade":15}'
+curl -u admin:admin123 -X PATCH http://localhost:8080/api/aulas/1/status -H "Content-Type: application/json" -d '{"status":"CONCLUIDA"}'   # 409: transição inválida
+```
 
-## Filtros (aulas e clientes)
-Os filtros rodam no banco (Criteria API / Specifications), combinam com **E** e ignoram o que estiver em branco; texto sem diferenciar maiúsculas e com `%`/`_` tratados como texto comum.
-
-| Tela | Filtros |
-|---|---|
-| `/aulas` | texto (esporte, personal ou unidade), esporte, personal, unidade, status, período (de/até) e "só aulas com vagas" |
-| `/clientes` | texto (nome, e-mail ou objetivo), objetivo, situação (com/sem inscrição em aula) e período de cadastro |
-
-A API aceita os mesmos parâmetros na query string, por exemplo `GET /api/aulas?status=AGENDADA&apenasComVagas=true&de=2026-11-20&q=carla`.
-Período invertido ou valor inválido não derruba a página: o filtro é ignorado e aparece um aviso.
-
-## Endpoints da API REST (entidade central: Aula)
 | Método | Rota | Descrição |
 |---|---|---|
-| GET | `/api/aulas?status=AGENDADA` | lista (filtro opcional) |
+| GET | `/api/aulas` | lista com filtros (`q`, `esporteId`, `personalId`, `unidadeId`, `status`, `de`, `ate`, `apenasComVagas`) |
 | GET | `/api/aulas/{id}` | detalhe |
-| POST | `/api/aulas` | cria (nasce AGENDADA) |
-| PUT | `/api/aulas/{id}` | atualiza (só AGENDADA) |
+| POST | `/api/aulas` | cria (nasce `AGENDADA`) |
+| PUT | `/api/aulas/{id}` | atualiza (só `AGENDADA`) |
 | PATCH | `/api/aulas/{id}/status` | transição de status |
-| DELETE | `/api/aulas/{id}` | exclui (só AGENDADA sem inscritos) |
-| POST/DELETE | `/api/aulas/{id}/inscricoes/{clienteId}` | inscreve / cancela inscrição |
-| GET | `/api/unidades`, `/esportes`, `/personais`, `/clientes` | consultas de apoio |
+| DELETE | `/api/aulas/{id}` | exclui (só `AGENDADA` sem inscritos) |
+| POST / DELETE | `/api/aulas/{id}/inscricoes/{clienteId}` | inscreve / cancela inscrição |
+| GET | `/api/unidades`, `/api/esportes`, `/api/personais`, `/api/clientes` | consultas de apoio |
 
-## Base de dados de demonstração
-`carga/CargaInicial` garante os cadastros básicos e `carga/CargaDemonstracao` gera dados fictícios com semente fixa:
-6 unidades, 10 esportes (2 inativos), 12 personal trainers, 63 clientes e cerca de 45 aulas entre 3 semanas atrás e 3 semanas à frente,
-com inscrições, aulas concluídas/canceladas/agendadas, sem estourar a lotação e sem conflito de horário do personal.
-Só roda se o banco estiver quase vazio (não duplica ao reiniciar). Para recriar a base do zero, apague a pasta `database/` e suba de novo.
-Para desligar: `academia.carga.demo=false`.
+Erros seguem o formato `ProblemDetail`: `400` validação (com `erros` por campo), `404` inexistente, `409` regra de negócio, concorrência ou integridade.
+Um arquivo pronto para o cliente HTTP do IntelliJ está em `docs/evidencias/api.http`.
 
-## Regras de negócio
-- Status: `AGENDADA → EM_ANDAMENTO | CANCELADA`, `EM_ANDAMENTO → CONCLUIDA`; `CONCLUIDA` e `CANCELADA` são finais (`StatusAula`, validado na entidade).
-- Inscrição: só em aula AGENDADA, sem duplicidade e respeitando a capacidade; `@Version` evita estourar a lotação em requisições simultâneas.
-- Um personal não pode ter duas aulas (não canceladas) sobrepostas; esporte INATIVO não aceita novas aulas.
-- Capacidade não pode ficar abaixo do número de inscritos; exclusão só sem inscritos (senão, cancelar).
+## 6. Testes
 
-## Erros (ProblemDetail)
-400 validação (campo a campo) · 404 inexistente · 409 regra de negócio, concorrência ou integridade.
+```powershell
+.\mvnw.cmd test                      # roda a suíte
+.\scripts\executar-testes.ps1        # roda com cobertura e gera o registro em docs\evidencias\RESULTADOS_TESTES.md
+```
+```bash
+./mvnw test
+./scripts/executar-testes.sh         # idem, em Linux/macOS
+```
 
-## Decisões e limitações
-- Esquema gerado pelo Hibernate (`ddl-auto=update`), como no exemplo; faixas (duração 15–240 min, capacidade 1–100) são validadas no DTO, não por CHECK no banco.
-- Ids `Long` (o exemplo usa `Integer`); CRUD de Unidade/Esporte/Personal/Cliente ainda não exposto; carga da planilha legada pendente em `CargaInicial`.
+- O **registro dos resultados** é gerado a partir dos relatórios reais do Surefire (`docs/evidencias/RESULTADOS_TESTES.md`).
+- A **cobertura** (JaCoCo) sai em `target/site/jacoco/index.html` ao usar `-Pcobertura`.
+- Os testes usam banco **em memória** e não dependem de nada externo.
+- No GitHub, o workflow `.github/workflows/ci.yml` roda tudo a cada `push` e guarda os relatórios como artefato.
+- Catálogo, cenários e o que **não** está coberto: `docs/TESTES.md`.
+
+## 7. Estrutura do projeto
+
+```
+src/main/java/br/com/academiafitness/
+  model/        entidades JPA e enums (Aula, Cliente, Esporte, PersonalTrainer, Unidade, Usuario, StatusAula, Perfil...)
+  repository/   Spring Data JPA + Specifications dos filtros (AulaSpecs, ClienteSpecs)
+  service/      regras de negócio e transações
+  controller/   páginas Thymeleaf (*WebController) e API REST (AulaController, CatalogoController)
+  form/ dto/    formulários HTML e DTOs da API, com validação
+  filtro/       critérios de pesquisa (AulaFiltro, ClienteFiltro)
+  security/     UserDetailsService, principal e filtro de estado da conta
+  config/       SecurityConfig (rotas, perfis, login, CSRF)
+  exception/    exceções de negócio e tratamento de erros (API e site)
+  carga/        carga inicial, usuários e base de demonstração
+src/main/resources/templates/   páginas Thymeleaf (fragments/layout.html, aulas/, clientes/, usuarios/...)
+src/main/resources/static/css/  tema visual
+src/test/                       testes unitários e de integração
+docs/                           documentação técnica e evidências
+scripts/                        execução de testes e geração do registro de resultados
+.github/workflows/ci.yml        integração contínua
+```
+
+## 8. Documentação
+
+| Documento | Conteúdo |
+|---|---|
+| [`docs/RELATORIO_TECNICO.md`](docs/RELATORIO_TECNICO.md) | problemas, soluções, testes e resultados, limitações e melhorias futuras |
+| [`docs/MODELAGEM.md`](docs/MODELAGEM.md) | modelo relacional (legado e evoluído) e diagrama de classes |
+| [`docs/DECISOES_TECNICAS.md`](docs/DECISOES_TECNICAS.md) | decisões, alternativas, justificativas e impactos |
+| [`docs/MATRIZ_RASTREABILIDADE.md`](docs/MATRIZ_RASTREABILIDADE.md) | requisito → lacuna → requisito revisado/novo → implementação → teste |
+| [`docs/TESTES.md`](docs/TESTES.md) | estratégia, catálogo de testes, cenários e funcionalidades não cobertas |
+| [`docs/evidencias/`](docs/evidencias/) | roteiro de evidências (antes/depois), registro dos testes, requisições de exemplo |
+| [`docs/HISTORICO_GIT.md`](docs/HISTORICO_GIT.md) | organização do repositório, tags das entregas e como publicar |
+
+## 9. Solução de problemas
+
+| Sintoma | O que fazer |
+|---|---|
+| `JAVA_HOME ... not defined` / versão do Java errada | instale o JDK 21 e confira `java -version` |
+| `Port 8080 was already in use` | feche o outro processo ou use outra porta (PowerShell): `.\\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--server.port=8081"` |
+| `Database may be already in use` | feche a outra instância da aplicação (o `AUTO_SERVER` já permite abrir em ferramenta de banco) |
+| Login recusado depois de mudar as senhas por variável | as contas só são criadas com a tabela de usuários vazia: apague `database/` e suba de novo |
+| Telas sem estilo | o Bootstrap vem de CDN; verifique a conexão com a internet |
+| Quero a base mínima | apague `database/` e suba com `"-Dspring-boot.run.arguments=--academia.carga.demo=false"` (ou ponha `academia.carga.demo=false` no `application.properties`) |
+
+## 10. Autoria
+
+Projeto individual. A seção de uso de ferramentas de apoio está no relatório técnico (`docs/RELATORIO_TECNICO.md`).
