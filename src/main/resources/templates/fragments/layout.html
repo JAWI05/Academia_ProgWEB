@@ -31,6 +31,7 @@
       </button>
       <div class="collapse navbar-collapse" id="menuPrincipal">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" th:classappend="${ativo == 'inicio'} ? 'active'" th:href="@{/}">Início</a></li>
           <li class="nav-item"><a class="nav-link" th:classappend="${ativo == 'aulas'} ? 'active'" th:href="@{/aulas}">Aulas</a></li>
           <li class="nav-item"><a class="nav-link" th:classappend="${ativo == 'clientes'} ? 'active'" th:href="@{/clientes}">Clientes</a></li>
         </ul>
@@ -46,6 +47,11 @@
     <span>Spring Boot · JPA · Thymeleaf · Bootstrap</span>
   </div>
 </footer>
+
+<div th:fragment="mensagens" class="container mt-3">
+  <div th:if="${sucesso}" class="alert alert-success" role="alert" th:text="${sucesso}">Sucesso</div>
+  <div th:if="${erro}" class="alert alert-danger" role="alert" th:text="${erro}">Erro</div>
+</div>
 
 <th:block th:fragment="scripts">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Erro')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar('')}"></header>
+
+<div class="page-header">
+  <div class="container">
+    <h1 th:text="${status != null ? 'Erro ' + status : 'Erro'}">Erro</h1>
+    <p>Não foi possível concluir a operação.</p>
+  </div>
+</div>
+
+<main class="container pb-5">
+  <div class="card">
+    <div class="card-body">
+      <p th:text="${error != null ? error : 'Ocorreu um erro inesperado.'}">Mensagem</p>
+      <a class="btn btn-primary" th:href="@{/}">Voltar ao início</a>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

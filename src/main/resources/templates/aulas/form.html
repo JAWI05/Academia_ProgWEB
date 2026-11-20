@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Aula')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar('aulas')}"></header>
+
+<div class="page-header">
+  <div class="container"><h1 th:text="${titulo}">Nova aula</h1></div>
+</div>
+
+<main class="container pb-5">
+  <div class="card">
+    <div class="card-body">
+      <form method="post" th:action="@{${acao}}" th:object="${form}" novalidate>
+        <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+          <p class="mb-0" th:each="e : ${#fields.globalErrors()}" th:text="${e}">Erro</p>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label" for="esporteId">Esporte</label>
+            <select class="form-select" id="esporteId" th:field="*{esporteId}" th:errorclass="is-invalid">
+              <option value="">Selecione</option>
+              <option th:each="e : ${esportes}" th:value="${e.id}" th:text="${e.nome}">Esporte</option>
+            </select>
+            <div class="invalid-feedback" th:errors="*{esporteId}">Erro</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="personalId">Personal trainer</label>
+            <select class="form-select" id="personalId" th:field="*{personalId}" th:errorclass="is-invalid">
+              <option value="">Selecione</option>
+              <option th:each="p : ${personais}" th:value="${p.id}" th:text="${p.nome}">Personal</option>
+            </select>
+            <div class="invalid-feedback" th:errors="*{personalId}">Erro</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="unidadeId">Unidade</label>
+            <select class="form-select" id="unidadeId" th:field="*{unidadeId}" th:errorclass="is-invalid">
+              <option value="">Selecione</option>
+              <option th:each="u : ${unidades}" th:value="${u.id}" th:text="${u.nome}">Unidade</option>
+            </select>
+            <div class="invalid-feedback" th:errors="*{unidadeId}">Erro</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="inicio">Início</label>
+            <input type="datetime-local" class="form-control" id="inicio" th:field="*{inicio}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{inicio}">Erro</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="duracaoMin">Duração (minutos)</label>
+            <input type="number" class="form-control" id="duracaoMin" min="15" max="240" th:field="*{duracaoMin}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{duracaoMin}">Erro</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="capacidade">Capacidade</label>
+            <input type="number" class="form-control" id="capacidade" min="1" max="100" th:field="*{capacidade}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{capacidade}">Erro</div>
+          </div>
+        </div>
+
+        <div class="mt-4 actions">
+          <button type="submit" class="btn btn-primary me-2">Salvar</button>
+          <a class="btn btn-outline-primary" th:href="@{/aulas}">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

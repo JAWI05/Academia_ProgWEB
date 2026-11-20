@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Cliente')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar('clientes')}"></header>
+
+<div class="page-header">
+  <div class="container"><h1 th:text="${titulo}">Novo cliente</h1></div>
+</div>
+
+<main class="container pb-5">
+  <div class="card">
+    <div class="card-body">
+      <form method="post" th:action="@{${acao}}" th:object="${form}" novalidate>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label" for="nome">Nome</label>
+            <input type="text" class="form-control" id="nome" th:field="*{nome}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{nome}">Erro</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="email">E-mail</label>
+            <input type="email" class="form-control" id="email" th:field="*{email}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{email}">Erro</div>
+          </div>
+          <div class="col-12">
+            <label class="form-label" for="objetivo">Objetivo (opcional)</label>
+            <input type="text" class="form-control" id="objetivo" th:field="*{objetivo}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{objetivo}">Erro</div>
+          </div>
+        </div>
+        <div class="mt-4 actions">
+          <button type="submit" class="btn btn-primary me-2">Salvar</button>
+          <a class="btn btn-outline-primary" th:href="@{/clientes}">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

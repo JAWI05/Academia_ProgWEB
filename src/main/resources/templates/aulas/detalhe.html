@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Aula')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar('aulas')}"></header>
+
+<div class="page-header">
+  <div class="container">
+    <h1 th:text="${aula.esporte()}">Esporte</h1>
+    <p th:text="${#temporals.format(aula.inicio(), 'dd/MM/yyyy HH:mm') + ' · ' + aula.unidade()}">Data · Unidade</p>
+  </div>
+</div>
+
+<main class="container pb-5">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+
+  <div class="row g-4 mt-1">
+    <div class="col-12 col-lg-6">
+      <div class="card">
+        <div class="card-header">Detalhes da aula</div>
+        <div class="card-body">
+          <dl class="row mb-0">
+            <dt class="col-sm-4">Esporte</dt><dd class="col-sm-8" th:text="${aula.esporte()}">Esporte</dd>
+            <dt class="col-sm-4">Personal</dt><dd class="col-sm-8" th:text="${aula.personal()}">Personal</dd>
+            <dt class="col-sm-4">Unidade</dt><dd class="col-sm-8" th:text="${aula.unidade()}">Unidade</dd>
+            <dt class="col-sm-4">Início</dt><dd class="col-sm-8" th:text="${#temporals.format(aula.inicio(), 'dd/MM/yyyy HH:mm')}">Início</dd>
+            <dt class="col-sm-4">Fim</dt><dd class="col-sm-8" th:text="${#temporals.format(aula.fim(), 'dd/MM/yyyy HH:mm')}">Fim</dd>
+            <dt class="col-sm-4">Vagas</dt><dd class="col-sm-8" th:text="${aula.vagasDisponiveis() + ' livres de ' + aula.capacidade()}">1 de 2</dd>
+            <dt class="col-sm-4">Status</dt>
+            <dd class="col-sm-8"><span class="status" th:classappend="${'status-' + #strings.toLowerCase(aula.status().name())}" th:text="${aula.status()}">AGENDADA</span></dd>
+          </dl>
+          <hr>
+          <div class="d-flex flex-wrap gap-2 actions">
+            <a class="btn btn-primary" th:if="${aula.status().name() == 'AGENDADA'}"
+               th:href="@{/aulas/{id}/editar(id=${aula.id()})}">Editar</a>
+
+            <form th:each="proximo : ${aula.status().proximos()}" method="post" class="d-inline"
+                  th:action="@{/aulas/{id}/status(id=${aula.id()})}">
+              <input type="hidden" name="status" th:value="${proximo.name()}">
+              <button type="submit" class="btn"
+                      th:classappend="${proximo.name() == 'CANCELADA'} ? 'btn-outline-primary' : 'btn-accent'"
+                      th:text="${proximo.name() == 'EM_ANDAMENTO' ? 'Iniciar aula' : (proximo.name() == 'CONCLUIDA' ? 'Concluir aula' : 'Cancelar aula')}">Ação</button>
+            </form>
+
+            <form th:if="${aula.status().name() == 'AGENDADA' and aula.inscritos().isEmpty()}" method="post" class="d-inline"
+                  th:action="@{/aulas/{id}/excluir(id=${aula.id()})}"
+                  onsubmit="return confirm('Excluir esta aula?');">
+              <button type="submit" class="btn btn-outline-primary">Excluir</button>
+            </form>
+
+            <a class="btn btn-outline-primary" th:href="@{/aulas}">Voltar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="card">
+        <div class="card-header" th:text="${'Inscritos (' + aula.inscritos().size() + ')'}">Inscritos</div>
+        <div class="card-body">
+          <p class="mb-3" th:if="${aula.inscritos().isEmpty()}">Nenhum cliente inscrito.</p>
+          <ul class="list-group list-group-flush mb-3" th:unless="${aula.inscritos().isEmpty()}">
+            <li class="list-group-item d-flex justify-content-between align-items-center" th:each="c : ${aula.inscritos()}">
+              <span th:text="${c.nome()}">Cliente</span>
+              <form th:if="${aula.status().name() == 'AGENDADA'}" method="post"
+                    th:action="@{/aulas/{id}/inscricoes/{cid}/cancelar(id=${aula.id()},cid=${c.id()})}">
+                <button type="submit" class="btn btn-sm btn-outline-primary">Remover</button>
+              </form>
+            </li>
+          </ul>
+
+          <form method="post" class="row g-2 align-items-end"
+                th:if="${aula.status().name() == 'AGENDADA' and aula.vagasDisponiveis() > 0 and !clientesDisponiveis.isEmpty()}"
+                th:action="@{/aulas/{id}/inscricoes(id=${aula.id()})}">
+            <div class="col-12 col-sm-8">
+              <label class="form-label" for="clienteId">Inscrever cliente</label>
+              <select class="form-select" id="clienteId" name="clienteId" required>
+                <option value="" disabled selected>Selecione</option>
+                <option th:each="c : ${clientesDisponiveis}" th:value="${c.id}" th:text="${c.nome}">Cliente</option>
+              </select>
+            </div>
+            <div class="col-12 col-sm-4 actions">
+              <button type="submit" class="btn btn-primary w-100">Inscrever</button>
+            </div>
+          </form>
+          <p class="mb-0" th:if="${aula.status().name() == 'AGENDADA' and aula.vagasDisponiveis() == 0}">Aula lotada.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

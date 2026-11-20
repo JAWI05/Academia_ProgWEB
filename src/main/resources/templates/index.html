@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Início')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar('inicio')}"></header>
+
+<section class="hero">
+  <div class="container">
+    <h1>Treine com quem entende.</h1>
+    <p class="lead">Consulte as aulas, acompanhe as inscrições e organize a rotina da academia em um só lugar.</p>
+    <div class="d-flex flex-wrap gap-2 mt-4">
+      <a class="btn btn-accent btn-lg" th:href="@{/aulas}">Ver aulas</a>
+      <a class="btn btn-outline-light btn-lg" th:href="@{/aulas/nova}">Agendar aula</a>
+    </div>
+  </div>
+</section>
+
+<main class="container py-4">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+
+  <div class="row g-3 my-3">
+    <div class="col-6 col-lg-3">
+      <div class="stat-card"><div class="numero" th:text="${totalAgendadas}">0</div><div class="rotulo">Aulas agendadas</div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card"><div class="numero" th:text="${totalClientes}">0</div><div class="rotulo">Clientes</div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card"><div class="numero" th:text="${totalPersonais}">0</div><div class="rotulo">Personal trainers</div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card"><div class="numero" th:text="${totalEsportes}">0</div><div class="rotulo">Esportes ativos</div></div>
+    </div>
+  </div>
+
+  <h2 class="h4 mt-4 mb-3">Próximas aulas</h2>
+  <div class="alert alert-info" th:if="${proximasAulas.isEmpty()}">Nenhuma aula agendada no momento.</div>
+  <div class="table-wrapper table-responsive" th:unless="${proximasAulas.isEmpty()}">
+    <table class="table table-striped table-hover align-middle">
+      <thead>
+        <tr><th>Esporte</th><th>Personal</th><th>Unidade</th><th>Início</th><th>Vagas</th><th class="text-end">Ações</th></tr>
+      </thead>
+      <tbody>
+        <tr th:each="aula : ${proximasAulas}">
+          <td th:text="${aula.esporte()}">Esporte</td>
+          <td th:text="${aula.personal()}">Personal</td>
+          <td th:text="${aula.unidade()}">Unidade</td>
+          <td th:text="${#temporals.format(aula.inicio(), 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</td>
+          <td th:text="${aula.vagasDisponiveis()}">0</td>
+          <td class="text-end"><a class="btn btn-sm btn-outline-primary" th:href="@{/aulas/{id}(id=${aula.id()})}">Ver</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
