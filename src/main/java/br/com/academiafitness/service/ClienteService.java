@@ -2,7 +2,9 @@ package br.com.academiafitness.service;
 
 import br.com.academiafitness.exception.RecursoNaoEncontradoException;
 import br.com.academiafitness.exception.RegraNegocioException;
+import br.com.academiafitness.filtro.ClienteFiltro;
 import br.com.academiafitness.form.ClienteForm;
+import br.com.academiafitness.repository.ClienteSpecs;
 import br.com.academiafitness.model.Cliente;
 import br.com.academiafitness.repository.AulaRepository;
 import br.com.academiafitness.repository.ClienteRepository;
@@ -27,6 +29,17 @@ public class ClienteService {
     @Transactional(readOnly = true)
     public List<Cliente> listar() {
         return clientes.findAll(Sort.by("nome"));
+    }
+
+    /** Pesquisa com filtros combinados (E), ordenada por nome. */
+    @Transactional(readOnly = true)
+    public List<Cliente> pesquisar(ClienteFiltro filtro) {
+        return clientes.findAll(ClienteSpecs.filtrar(filtro), Sort.by("nome"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> objetivos() {
+        return clientes.findObjetivosDistintos();
     }
 
     @Transactional(readOnly = true)

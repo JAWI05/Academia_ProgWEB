@@ -4,6 +4,9 @@ import br.com.academiafitness.model.*;
 import br.com.academiafitness.dto.AulaRequest;
 import br.com.academiafitness.dto.AulaResponse;
 import br.com.academiafitness.exception.RecursoNaoEncontradoException;
+import br.com.academiafitness.filtro.AulaFiltro;
+import br.com.academiafitness.repository.AulaSpecs;
+import org.springframework.data.domain.Sort;
 import br.com.academiafitness.exception.RegraNegocioException;
 import br.com.academiafitness.repository.*;
 import org.springframework.stereotype.Service;
@@ -38,6 +41,13 @@ public class AulaService {
                 ? aulas.findAllByOrderByInicioAsc()
                 : aulas.findByStatusOrderByInicioAsc(status);
         return resultado.stream().map(AulaResponse::from).toList();
+    }
+
+    /** Pesquisa com filtros combinados (E), ordenada pelo início da aula. */
+    @Transactional(readOnly = true)
+    public List<AulaResponse> pesquisar(AulaFiltro filtro) {
+        return aulas.findAll(AulaSpecs.filtrar(filtro), Sort.by("inicio")).stream()
+                .map(AulaResponse::from).toList();
     }
 
     @Transactional(readOnly = true)

@@ -31,6 +31,11 @@ public class CadastroService {
                 .filter(e -> e.getStatus() == StatusEsporte.ATIVO).toList();
     }
 
+    /** Todos os esportes (inclusive inativos): aulas antigas podem ser de esportes hoje inativos. */
+    public List<Esporte> todosEsportes() {
+        return esportes.findAll(Sort.by("nome"));
+    }
+
     public List<PersonalTrainer> personais() {
         return personais.findAll(Sort.by("nome"));
     }
