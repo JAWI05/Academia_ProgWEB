@@ -148,4 +148,35 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		<!-- Relatório de cobertura de testes: ./mvnw verify -Pcobertura  ->  target/site/jacoco/index.html -->
+		<profile>
+			<id>cobertura</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>0.8.13</version>
+						<executions>
+							<execution>
+								<id>preparar-agente</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>relatorio</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 </project>
