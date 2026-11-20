@@ -1,0 +1,227 @@
+/* =========================================================
+   Academia Fitness — tema sobre Bootstrap 5
+   Paleta (Color Hunt):
+     navy  #1B365D  textos, navbar, rodapé, cabeçalho de tabela
+     blue  #005A9C  cor primária (botões, links, destaques)
+     sky   #60C1E5  acento (foco, botão secundário, barras)
+     ice   #A0E0EF  fundos suaves, bordas decorativas
+   Contraste (WCAG): navy/branco 12,1 · azul/branco 7,1 · navy/sky 5,9 · navy/ice 8,3.
+   Regra: sky e ice NUNCA como cor de texto sobre branco (2,0 e 1,5); só como fundo.
+   Tons derivados da paleta: --ac-bg #EAF8FB, --ac-stripe #EEF9FC, --ac-hover #D7F0F8
+   (ice/sky diluídos em branco), --ac-border #5994BF (azul diluído, 3,3:1 p/ campos).
+   ========================================================= */
+
+:root {
+  --ac-navy: #1B365D;
+  --ac-blue: #005A9C;
+  --ac-sky:  #60C1E5;
+  --ac-ice:  #A0E0EF;
+  --ac-bg:     #EAF8FB;
+  --ac-stripe: #EEF9FC;
+  --ac-hover:  #D7F0F8;
+  --ac-border: #5994BF;
+
+  /* variáveis do Bootstrap */
+  --bs-primary: #005A9C;
+  --bs-primary-rgb: 0, 90, 156;
+  --bs-body-color: #1B365D;
+  --bs-body-color-rgb: 27, 54, 93;
+  --bs-body-bg: #EAF8FB;
+  --bs-body-bg-rgb: 234, 248, 251;
+  --bs-link-color: #005A9C;
+  --bs-link-color-rgb: 0, 90, 156;
+  --bs-link-hover-color: #1B365D;
+  --bs-link-hover-color-rgb: 27, 54, 93;
+  --bs-border-color: #A0E0EF;
+  --bs-heading-color: #1B365D;
+  --bs-focus-ring-color: rgba(96, 193, 229, .45);
+}
+
+/* ---------- base / estrutura de tela ---------- */
+html, body { height: 100%; }
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--ac-bg);
+  color: var(--ac-navy);
+}
+main { flex: 1 0 auto; }
+h1, h2, h3, h4, h5, h6 { color: var(--ac-navy); font-weight: 700; }
+a { text-underline-offset: .15em; }
+:focus-visible { outline: 3px solid var(--ac-sky); outline-offset: 2px; }
+
+/* ---------- navbar ---------- */
+.navbar-academia {
+  background: var(--ac-navy);
+  border-bottom: 4px solid var(--ac-sky);
+}
+.navbar-academia .navbar-brand,
+.navbar-academia .nav-link { color: #fff; }
+.navbar-academia .navbar-brand { font-weight: 700; letter-spacing: .02em; }
+.navbar-academia .nav-link { opacity: .9; }
+.navbar-academia .nav-link:hover,
+.navbar-academia .nav-link:focus { color: var(--ac-ice); opacity: 1; }
+.navbar-academia .nav-link.active {
+  color: #fff; opacity: 1;
+  box-shadow: inset 0 -3px 0 var(--ac-sky);
+}
+.navbar-academia .navbar-toggler { border-color: rgba(255, 255, 255, .6); }
+.navbar-academia .navbar-toggler-icon { filter: invert(1); }
+
+/* ---------- cabeçalho de página ---------- */
+.page-header {
+  background: linear-gradient(90deg, var(--ac-blue), var(--ac-navy));
+  color: #fff;
+  padding: 1.5rem 0;
+  margin-bottom: 1.5rem;
+}
+.page-header h1 { color: #fff; margin: 0; font-size: 1.75rem; }
+.page-header p { margin: .25rem 0 0; color: var(--ac-ice); }
+
+/* ---------- cards ---------- */
+.card {
+  background: #fff;
+  border: 1px solid var(--ac-ice);
+  border-radius: .75rem;
+  box-shadow: 0 2px 8px rgba(27, 54, 93, .08);
+}
+.card-header {
+  background: var(--ac-ice);
+  color: var(--ac-navy);
+  font-weight: 600;
+  border-bottom: 1px solid var(--ac-sky);
+}
+
+/* ---------- botões ---------- */
+.btn { border-radius: .5rem; font-weight: 600; }
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #005A9C;
+  --bs-btn-border-color: #005A9C;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #1B365D;
+  --bs-btn-hover-border-color: #1B365D;
+  --bs-btn-focus-shadow-rgb: 96, 193, 229;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #1B365D;
+  --bs-btn-active-border-color: #1B365D;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #005A9C;
+  --bs-btn-disabled-border-color: #005A9C;
+}
+.btn-outline-primary {
+  --bs-btn-color: #005A9C;
+  --bs-btn-border-color: #005A9C;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #005A9C;
+  --bs-btn-hover-border-color: #005A9C;
+  --bs-btn-focus-shadow-rgb: 96, 193, 229;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #1B365D;
+  --bs-btn-active-border-color: #1B365D;
+}
+/* acento: fundo sky com texto navy (5,9:1) */
+.btn-accent {
+  --bs-btn-color: #1B365D;
+  --bs-btn-bg: #60C1E5;
+  --bs-btn-border-color: #60C1E5;
+  --bs-btn-hover-color: #1B365D;
+  --bs-btn-hover-bg: #A0E0EF;
+  --bs-btn-hover-border-color: #A0E0EF;
+  --bs-btn-focus-shadow-rgb: 27, 54, 93;
+  --bs-btn-active-color: #1B365D;
+  --bs-btn-active-bg: #A0E0EF;
+  --bs-btn-active-border-color: #60C1E5;
+  --bs-btn-disabled-color: #1B365D;
+  --bs-btn-disabled-bg: #60C1E5;
+  --bs-btn-disabled-border-color: #60C1E5;
+}
+/* telas pequenas: ações em largura total */
+@media (max-width: 575.98px) {
+  .actions .btn { width: 100%; margin-bottom: .5rem; }
+}
+
+/* ---------- formulários ---------- */
+.form-label { font-weight: 600; color: var(--ac-navy); }
+.form-control, .form-select {
+  background-color: #fff;
+  color: var(--ac-navy);
+  border: 1px solid var(--ac-border);
+  border-radius: .5rem;
+}
+.form-control::placeholder { color: #5A6F8C; }
+.form-control:focus, .form-select:focus {
+  border-color: var(--ac-blue);
+  box-shadow: 0 0 0 .25rem rgba(96, 193, 229, .45);
+}
+.form-control:disabled, .form-select:disabled { background: var(--ac-stripe); }
+.form-check-input:checked { background-color: var(--ac-blue); border-color: var(--ac-blue); }
+.form-check-input:focus { border-color: var(--ac-blue); box-shadow: 0 0 0 .25rem rgba(96, 193, 229, .45); }
+.invalid-feedback, .field-error { font-size: .875rem; }
+
+/* ---------- tabelas ---------- */
+.table {
+  --bs-table-bg: #fff;
+  --bs-table-color: #1B365D;
+  --bs-table-border-color: #A0E0EF;
+  --bs-table-striped-bg: #EEF9FC;
+  --bs-table-striped-color: #1B365D;
+  --bs-table-hover-bg: #D7F0F8;
+  --bs-table-hover-color: #1B365D;
+}
+.table thead th {
+  background: var(--ac-navy);
+  color: #fff;
+  border-bottom: 3px solid var(--ac-sky);
+  white-space: nowrap;
+}
+.table-wrapper {
+  background: #fff;
+  border: 1px solid var(--ac-ice);
+  border-radius: .75rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(27, 54, 93, .08);
+}
+.table-wrapper .table { margin-bottom: 0; }
+
+/* ---------- status das aulas (th:classappend="'status-' + ${#strings.toLowerCase(aula.status)}") ---------- */
+.status {
+  display: inline-block;
+  padding: .25em .7em;
+  border-radius: 999px;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.status-agendada     { background: var(--ac-blue); color: #fff; }
+.status-em_andamento { background: var(--ac-sky);  color: var(--ac-navy); }
+.status-concluida    { background: var(--ac-navy); color: #fff; }
+.status-cancelada    { background: #fff; color: #842029; border: 1px solid #842029; }
+
+/* ---------- alertas ---------- */
+.alert { border-radius: .5rem; border-width: 1px; }
+.alert-info { background: var(--ac-hover); border-color: var(--ac-sky); color: var(--ac-navy); }
+
+/* ---------- login ---------- */
+.login-page {
+  background: linear-gradient(135deg, var(--ac-navy) 0%, var(--ac-blue) 100%);
+}
+.login-card {
+  max-width: 420px;
+  width: 100%;
+  border: 0;
+  border-top: 6px solid var(--ac-sky);
+}
+
+/* ---------- rodapé ---------- */
+.footer-academia {
+  flex-shrink: 0;
+  background: var(--ac-navy);
+  color: #fff;
+  border-top: 4px solid var(--ac-sky);
+  padding: 1.25rem 0;
+  font-size: .9rem;
+}
+.footer-academia a { color: var(--ac-ice); }
+.footer-academia a:hover { color: #fff; }
