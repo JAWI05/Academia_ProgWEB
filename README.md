@@ -1,8 +1,8 @@
-# Academia — Projeto Integrador Full Stack (backend + site)
+# Academia — Projeto Integrador Full Stack (backend + site + login)
 
 Base: projeto Spring Initializr (`progweb`) + padrão do exemplo da Aula 16 (BDJPA) do professor.
 Spring Boot 4.1 · Java 21 · Spring Data JPA/Hibernate · H2 (arquivo, schema APP) · Bean Validation.
-Thymeleaf · Bootstrap. O Spring Security está com uma configuração provisória que libera tudo (`config/SecurityConfig`); login, perfis e proteção no servidor entram na 3ª entrega (fases 9–10).
+Thymeleaf · Bootstrap · Spring Security (login, logout, dois perfis, BCrypt, CSRF).
 
 ## O que veio do exemplo do professor
 | Exemplo (BDJPA) | Aqui |
@@ -21,10 +21,37 @@ Thymeleaf · Bootstrap. O Spring Security está com uma configuração provisór
 Console do banco: http://localhost:8080/h2-console (URL `jdbc:h2:file:./database/academia;AUTO_SERVER=TRUE`, usuário `sa`, senha vazia; tabelas no schema `APP`).
 Opcional: `DB_USER`, `DB_PASSWORD`. O Maven Wrapper já está no projeto.
 
+## Segurança (3ª entrega)
+Usuários de demonstração, criados por `carga/CargaUsuarios` na primeira execução (quando não existe nenhum usuário), com senhas gravadas em BCrypt. A `CargaDemonstracao` só gera dados fictícios (clientes, aulas, personais...) e não cria contas:
+
+| Perfil | Login | Senha |
+|---|---|---|
+| ADMIN | `admin` | `admin123` |
+| OPERADOR | `operador` | `operador123` |
+
+Valores só para demonstração: troque em `application.properties` ou pelas variáveis `ADMIN_SENHA` e `OPERADOR_SENHA`.
+
+| Permissão | ADMIN | OPERADOR |
+|---|---|---|
+| Ver aulas, detalhes e clientes | sim | sim |
+| Cadastrar/editar clientes | sim | sim |
+| Inscrever / cancelar inscrição | sim | sim |
+| Criar, editar, excluir aula e alterar status | sim | **não** |
+| Excluir cliente | sim | **não** |
+| Gerenciar usuários (`/usuarios`) | sim | **não** |
+
+As regras ficam em `config/SecurityConfig` e valem no servidor: o operador que digitar a URL restrita cai em `/acesso-negado` (HTTP 403), e a API REST segue as mesmas regras (use autenticação básica no curl, ex.: `curl -u admin:admin123 localhost:8080/api/aulas`).
+Os botões restritos também são ocultados nas telas com `sec:authorize`, mas isso é só conforto visual.
+Logout é por `POST /logout` com token CSRF. `EstadoContaFilter` encerra a sessão de quem foi desativado por um administrador.
+Regras de usuário: não é possível desativar a própria conta nem deixar o sistema sem um administrador ativo.
+O console H2 está desligado por padrão (`H2_CONSOLE=true` só para depuração local).
+
 ## Site (Thymeleaf + Bootstrap + tema próprio)
 | Página | Rota |
 |---|---|
-| Início (painel e próximas aulas) | `/` |
+| Login / acesso negado | `/login`, `/acesso-negado` |
+| Início (painel e próximas aulas) | `/home` (e `/`) |
+| Usuários (somente ADMIN) | `/usuarios` |
 | Aulas: lista com filtro por status | `/aulas` |
 | Aula: detalhe, inscrições e troca de status | `/aulas/{id}` |
 | Aula: criar / editar | `/aulas/nova`, `/aulas/{id}/editar` |
@@ -63,4 +90,4 @@ Para desligar: `academia.carga.demo=false`.
 
 ## Decisões e limitações
 - Esquema gerado pelo Hibernate (`ddl-auto=update`), como no exemplo; faixas (duração 15–240 min, capacidade 1–100) são validadas no DTO, não por CHECK no banco.
-- Ids `Long` (o exemplo usa `Integer`); sem autenticação (3ª entrega); CRUD de Unidade/Esporte/Personal/Cliente ainda não exposto; carga da planilha legada pendente em `CargaInicial`.
+- Ids `Long` (o exemplo usa `Integer`); CRUD de Unidade/Esporte/Personal/Cliente ainda não exposto; carga da planilha legada pendente em `CargaInicial`.
