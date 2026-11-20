@@ -1,8 +1,8 @@
-# Academia — Projeto Integrador Full Stack (2ª entrega, fases 5–8)
+# Academia — Projeto Integrador Full Stack (backend + site)
 
 Base: projeto Spring Initializr (`progweb`) + padrão do exemplo da Aula 16 (BDJPA) do professor.
 Spring Boot 4.1 · Java 21 · Spring Data JPA/Hibernate · H2 (arquivo, schema APP) · Bean Validation.
-Thymeleaf, Nesta entrega o Spring Security está com uma configuração provisória que libera tudo (`config/SecurityConfig`); login, perfis e Bootstrap entram na 3ª entrega (fases 9–10).
+Thymeleaf · Bootstrap. O Spring Security está com uma configuração provisória que libera tudo (`config/SecurityConfig`); login, perfis e proteção no servidor entram na 3ª entrega (fases 9–10).
 
 ## O que veio do exemplo do professor
 | Exemplo (BDJPA) | Aqui |
@@ -21,7 +21,19 @@ Thymeleaf, Nesta entrega o Spring Security está com uma configuração provisó
 Console do banco: http://localhost:8080/h2-console (URL `jdbc:h2:file:./database/academia;AUTO_SERVER=TRUE`, usuário `sa`, senha vazia; tabelas no schema `APP`).
 Opcional: `DB_USER`, `DB_PASSWORD`. O Maven Wrapper já está no projeto.
 
-## Endpoints (entidade central: Aula)
+## Site (Thymeleaf + Bootstrap + tema próprio)
+| Página | Rota |
+|---|---|
+| Início (painel e próximas aulas) | `/` |
+| Aulas: lista com filtro por status | `/aulas` |
+| Aula: detalhe, inscrições e troca de status | `/aulas/{id}` |
+| Aula: criar / editar | `/aulas/nova`, `/aulas/{id}/editar` |
+| Clientes: lista, criar, editar, excluir | `/clientes`, `/clientes/novo`, `/clientes/{id}/editar` |
+
+As regras vêm da camada de serviço (as mesmas da API): transições de status, lotação, conflito de horário do personal, esporte inativo, e-mail único de cliente e bloqueio de exclusão de cliente inscrito.
+Estilos: `static/css/custom.css` (paleta #1B365D, #005A9C, #60C1E5, #A0E0EF); prévia dos componentes em `/design-preview.html`.
+
+## Endpoints da API REST (entidade central: Aula)
 | Método | Rota | Descrição |
 |---|---|---|
 | GET | `/api/aulas?status=AGENDADA` | lista (filtro opcional) |
@@ -44,4 +56,4 @@ Opcional: `DB_USER`, `DB_PASSWORD`. O Maven Wrapper já está no projeto.
 
 ## Decisões e limitações
 - Esquema gerado pelo Hibernate (`ddl-auto=update`), como no exemplo; faixas (duração 15–240 min, capacidade 1–100) são validadas no DTO, não por CHECK no banco.
-- Ids `Long` (o exemplo usa `Integer`); sem autenticação (3ª entrega); sem telas; CRUD de Unidade/Esporte/Personal/Cliente ainda não exposto; carga da planilha legada pendente em `CargaInicial`.
+- Ids `Long` (o exemplo usa `Integer`); sem autenticação (3ª entrega); CRUD de Unidade/Esporte/Personal/Cliente ainda não exposto; carga da planilha legada pendente em `CargaInicial`.
