@@ -21,7 +21,7 @@ public class PaginaInicialController {
         this.cadastros = cadastros;
     }
 
-    @GetMapping("/")
+    @GetMapping({"/", "/home"})
     public String inicio(Model model) {
         List<AulaResponse> agendadas = aulas.listar(StatusAula.AGENDADA);
         model.addAttribute("totalAgendadas", agendadas.size());
