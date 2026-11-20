@@ -101,4 +101,44 @@ class SiteIT {
                 .andExpect(content().string(not(containsString("/usuarios"))))
                 .andExpect(content().string(not(containsString("Nova aula"))));
     }
+
+    // ---------- filtros
+
+    @Test
+    void filtroDeAulasSemResultadoMostraMensagem() throws Exception {
+        mvc.perform(get("/aulas").param("status", "CANCELADA").with(ADMIN))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Nenhuma aula encontrada")));
+    }
+
+    @Test
+    void filtroDeAulasPorEsporteMantemOResultado() throws Exception {
+        mvc.perform(get("/aulas").param("esporteId", "1").with(ADMIN))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Carla Mendes")));
+    }
+
+    @Test
+    void periodoInvertidoEValorInvalidoGeramAvisoSemQuebrarAPagina() throws Exception {
+        mvc.perform(get("/aulas").param("de", "2026-12-31").param("ate", "2026-01-01").with(ADMIN))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("ignorado")));
+        mvc.perform(get("/aulas").param("status", "XYZ").with(ADMIN))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("ignorado")));
+    }
+
+    @Test
+    void filtroDeClientes() throws Exception {
+        mvc.perform(get("/clientes").param("q", "miriam").with(OPERADOR))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("miriam@example.com")));
+        mvc.perform(get("/clientes").param("q", "zzzz").with(OPERADOR))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Nenhum cliente encontrado")));
+        mvc.perform(get("/clientes").param("situacao", "SEM_INSCRICAO").with(OPERADOR))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("alexandre@example.com")))
+                .andExpect(content().string(not(containsString("miriam@example.com"))));
+    }
 }

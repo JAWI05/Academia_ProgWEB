@@ -63,4 +63,14 @@ class AulaControllerIT {
                         .content("{\"status\":\"CONCLUIDA\"}"))
                 .andExpect(status().isConflict());
     }
+
+    @Test
+    void apiAceitaOsMesmosFiltrosDoSite() throws Exception {
+        mvc.perform(get("/api/aulas").param("status", "AGENDADA").param("apenasComVagas", "true").with(ADMIN))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.status != 'AGENDADA')]").isEmpty());
+        mvc.perform(get("/api/aulas").param("q", "zzzz").with(ADMIN))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
 }
