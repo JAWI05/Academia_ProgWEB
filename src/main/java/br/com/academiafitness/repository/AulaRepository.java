@@ -21,6 +21,8 @@ public interface AulaRepository extends JpaRepository<Aula, Long> {
     @EntityGraph(attributePaths = {"esporte", "personal", "unidade", "inscritos"})
     Optional<Aula> findWithDetalhesById(Long id);
 
+    boolean existsByInscritosId(Long clienteId);
+
     /** Aulas não canceladas de um personal, usadas na detecção de conflito de horário. */
     @Query("select a from Aula a where a.personal.id = :personalId and a.status <> br.com.academiafitness.model.StatusAula.CANCELADA")
     List<Aula> findAtivasDoPersonal(@Param("personalId") Long personalId);
