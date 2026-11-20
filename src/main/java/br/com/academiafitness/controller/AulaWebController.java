@@ -3,6 +3,7 @@ package br.com.academiafitness.controller;
 import br.com.academiafitness.dto.AulaResponse;
 import br.com.academiafitness.exception.RecursoNaoEncontradoException;
 import br.com.academiafitness.exception.RegraNegocioException;
+import br.com.academiafitness.filtro.AulaFiltro;
 import br.com.academiafitness.form.AulaForm;
 import br.com.academiafitness.model.Cliente;
 import br.com.academiafitness.model.StatusAula;
@@ -33,9 +34,21 @@ public class AulaWebController {
     }
 
     @GetMapping
-    public String listar(@RequestParam(required = false) StatusAula status, Model model) {
-        model.addAttribute("aulas", aulas.listar(status));
-        model.addAttribute("statusSelecionado", status);
+    public String listar(@ModelAttribute("filtro") AulaFiltro filtro, BindingResult binding, Model model) {
+        if (binding.hasErrors()) {
+            model.addAttribute("aviso", "Algum filtro tinha valor inválido e foi ignorado.");
+        }
+        if (filtro.periodoInvertido()) {
+            model.addAttribute("aviso", "A data inicial é posterior à data final; o período foi ignorado.");
+            filtro.setDe(null);
+            filtro.setAte(null);
+        }
+        List<AulaResponse> resultado = aulas.pesquisar(filtro);
+        model.addAttribute("aulas", resultado);
+        model.addAttribute("total", resultado.size());
+        model.addAttribute("esportes", cadastros.todosEsportes());
+        model.addAttribute("personais", cadastros.personais());
+        model.addAttribute("unidades", cadastros.unidades());
         model.addAttribute("todosStatus", StatusAula.values());
         return "aulas/lista";
     }

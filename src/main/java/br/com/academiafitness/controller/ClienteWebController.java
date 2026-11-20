@@ -1,7 +1,10 @@
 package br.com.academiafitness.controller;
 
 import br.com.academiafitness.exception.RegraNegocioException;
+import br.com.academiafitness.filtro.ClienteFiltro;
+import br.com.academiafitness.filtro.SituacaoCliente;
 import br.com.academiafitness.form.ClienteForm;
+import br.com.academiafitness.model.Cliente;
 import br.com.academiafitness.service.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -9,6 +12,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/clientes")
@@ -21,8 +26,20 @@ public class ClienteWebController {
     }
 
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("clientes", clientes.listar());
+    public String listar(@ModelAttribute("filtro") ClienteFiltro filtro, BindingResult binding, Model model) {
+        if (binding.hasErrors()) {
+            model.addAttribute("aviso", "Algum filtro tinha valor inválido e foi ignorado.");
+        }
+        if (filtro.periodoInvertido()) {
+            model.addAttribute("aviso", "A data inicial é posterior à data final; o período foi ignorado.");
+            filtro.setCadastroDe(null);
+            filtro.setCadastroAte(null);
+        }
+        List<Cliente> resultado = clientes.pesquisar(filtro);
+        model.addAttribute("clientes", resultado);
+        model.addAttribute("total", resultado.size());
+        model.addAttribute("objetivos", clientes.objetivos());
+        model.addAttribute("situacoes", SituacaoCliente.values());
         return "clientes/lista";
     }
 

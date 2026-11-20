@@ -1,6 +1,6 @@
 package br.com.academiafitness.controller;
 
-import br.com.academiafitness.model.StatusAula;
+import br.com.academiafitness.filtro.AulaFiltro;
 import br.com.academiafitness.dto.AulaRequest;
 import br.com.academiafitness.dto.AulaResponse;
 import br.com.academiafitness.dto.StatusRequest;
@@ -24,8 +24,8 @@ public class AulaController {
     }
 
     @GetMapping
-    public List<AulaResponse> listar(@RequestParam(required = false) StatusAula status) {
-        return service.listar(status);
+    public List<AulaResponse> listar(AulaFiltro filtro) {
+        return service.pesquisar(filtro);
     }
 
     @GetMapping("/{id}")
