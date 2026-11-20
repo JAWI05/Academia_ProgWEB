@@ -4,13 +4,14 @@ import br.com.academiafitness.model.Aula;
 import br.com.academiafitness.model.StatusAula;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface AulaRepository extends JpaRepository<Aula, Long> {
+public interface AulaRepository extends JpaRepository<Aula, Long>, JpaSpecificationExecutor<Aula> {
 
     @EntityGraph(attributePaths = {"esporte", "personal", "unidade", "inscritos"})
     List<Aula> findAllByOrderByInicioAsc();
