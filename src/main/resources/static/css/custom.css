@@ -246,3 +246,8 @@ a { text-underline-offset: .15em; }
 }
 .stat-card .numero { font-size: 2rem; font-weight: 800; color: var(--ac-blue); line-height: 1.1; }
 .stat-card .rotulo { color: var(--ac-navy); font-weight: 600; }
+
+/* ---------- usuários / login ---------- */
+.status-ativo   { background: var(--ac-blue); color: #fff; }
+.status-inativo { background: #fff; color: #842029; border: 1px solid #842029; }
+.login-page main { min-height: 0; }
