@@ -3,6 +3,7 @@ package br.com.academiafitness.exception;
 import br.com.academiafitness.controller.AulaWebController;
 import br.com.academiafitness.controller.ClienteWebController;
 import br.com.academiafitness.controller.PaginaInicialController;
+import br.com.academiafitness.controller.UsuarioWebController;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -10,7 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /** Páginas de erro amigáveis para o site (a API REST tem o próprio GlobalExceptionHandler). */
-@ControllerAdvice(assignableTypes = {AulaWebController.class, ClienteWebController.class, PaginaInicialController.class})
+@ControllerAdvice(assignableTypes = {AulaWebController.class, ClienteWebController.class,
+        PaginaInicialController.class, UsuarioWebController.class})
 public class WebExceptionHandler {
 
     @ExceptionHandler(RecursoNaoEncontradoException.class)
