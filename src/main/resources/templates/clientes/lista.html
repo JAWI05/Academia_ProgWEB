@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/layout :: head('Clientes')}"></head>
 <body>
 <header th:replace="~{fragments/layout :: navbar('clientes')}"></header>
@@ -33,7 +34,7 @@
           <td class="text-end">
             <div class="d-inline-flex gap-2">
               <a class="btn btn-sm btn-outline-primary" th:href="@{/clientes/{id}/editar(id=${c.id})}">Editar</a>
-              <form method="post" th:action="@{/clientes/{id}/excluir(id=${c.id})}"
+              <form method="post" sec:authorize="hasRole('ADMIN')" th:action="@{/clientes/{id}/excluir(id=${c.id})}"
                     onsubmit="return confirm('Excluir este cliente?');">
                 <button type="submit" class="btn btn-sm btn-outline-primary">Excluir</button>
               </form>

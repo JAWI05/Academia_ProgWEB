@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/layout :: head('Aula')}"></head>
 <body>
 <header th:replace="~{fragments/layout :: navbar('aulas')}"></header>
@@ -31,10 +32,10 @@
           </dl>
           <hr>
           <div class="d-flex flex-wrap gap-2 actions">
-            <a class="btn btn-primary" th:if="${aula.status().name() == 'AGENDADA'}"
+            <a class="btn btn-primary" sec:authorize="hasRole('ADMIN')" th:if="${aula.status().name() == 'AGENDADA'}"
                th:href="@{/aulas/{id}/editar(id=${aula.id()})}">Editar</a>
 
-            <form th:each="proximo : ${aula.status().proximos()}" method="post" class="d-inline"
+            <form th:each="proximo : ${aula.status().proximos()}" sec:authorize="hasRole('ADMIN')" method="post" class="d-inline"
                   th:action="@{/aulas/{id}/status(id=${aula.id()})}">
               <input type="hidden" name="status" th:value="${proximo.name()}">
               <button type="submit" class="btn"
@@ -42,7 +43,7 @@
                       th:text="${proximo.name() == 'EM_ANDAMENTO' ? 'Iniciar aula' : (proximo.name() == 'CONCLUIDA' ? 'Concluir aula' : 'Cancelar aula')}">Ação</button>
             </form>
 
-            <form th:if="${aula.status().name() == 'AGENDADA' and aula.inscritos().isEmpty()}" method="post" class="d-inline"
+            <form th:if="${aula.status().name() == 'AGENDADA' and aula.inscritos().isEmpty()}" sec:authorize="hasRole('ADMIN')" method="post" class="d-inline"
                   th:action="@{/aulas/{id}/excluir(id=${aula.id()})}"
                   onsubmit="return confirm('Excluir esta aula?');">
               <button type="submit" class="btn btn-outline-primary">Excluir</button>

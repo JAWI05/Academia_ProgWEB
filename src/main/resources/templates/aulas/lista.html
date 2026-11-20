@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/layout :: head('Aulas')}"></head>
 <body>
 <header th:replace="~{fragments/layout :: navbar('aulas')}"></header>
@@ -10,7 +11,7 @@
       <h1>Aulas</h1>
       <p>Horários, personal trainers e vagas disponíveis</p>
     </div>
-    <a class="btn btn-accent" th:href="@{/aulas/nova}">Nova aula</a>
+    <a class="btn btn-accent" sec:authorize="hasRole('ADMIN')" th:href="@{/aulas/nova}">Nova aula</a>
   </div>
 </div>
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <!--
   Fragmentos reutilizáveis. Em cada página:
 
@@ -34,8 +35,14 @@
           <li class="nav-item"><a class="nav-link" th:classappend="${ativo == 'inicio'} ? 'active'" th:href="@{/}">Início</a></li>
           <li class="nav-item"><a class="nav-link" th:classappend="${ativo == 'aulas'} ? 'active'" th:href="@{/aulas}">Aulas</a></li>
           <li class="nav-item"><a class="nav-link" th:classappend="${ativo == 'clientes'} ? 'active'" th:href="@{/clientes}">Clientes</a></li>
+          <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a class="nav-link" th:classappend="${ativo == 'usuarios'} ? 'active'" th:href="@{/usuarios}">Usuários</a></li>
         </ul>
-        <!-- 3ª entrega: exibir usuário e botão Sair (form POST /logout) com sec:authorize -->
+        <div class="d-flex align-items-center gap-2" sec:authorize="isAuthenticated()">
+          <span class="navbar-text text-white">Olá, <strong sec:authentication="name">usuário</strong></span>
+          <form th:action="@{/logout}" method="post" class="m-0">
+            <button type="submit" class="btn btn-sm btn-accent">Sair</button>
+          </form>
+        </div>
       </div>
     </div>
   </nav>
