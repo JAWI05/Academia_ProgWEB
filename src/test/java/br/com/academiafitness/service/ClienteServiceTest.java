@@ -78,7 +78,7 @@ class ClienteServiceTest {
         when(aulas.existsByInscritosId(1L)).thenReturn(true);
 
         assertThrows(RegraNegocioException.class, () -> service.excluir(1L));
-        verify(clientes, never()).delete(any());
+        verify(clientes, never()).delete(any(Cliente.class));
     }
 
     @Test

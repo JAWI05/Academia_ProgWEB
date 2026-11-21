@@ -209,7 +209,7 @@ class AulaServiceTest {
         when(aulas.findWithDetalhesById(1L)).thenReturn(Optional.of(aula));
 
         assertThrows(RegraNegocioException.class, () -> service.excluir(1L));
-        verify(aulas, never()).delete(any());
+        verify(aulas, never()).delete(any(Aula.class));
     }
 
     @Test
